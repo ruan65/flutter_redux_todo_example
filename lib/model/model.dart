@@ -10,7 +10,16 @@ class Item {
   });
 
   Item copyWith({int id, String body}) => Item(
-    id: id ?? this.id,
-    body: body ?? this.body,
-  );
+        id: id ?? this.id,
+        body: body ?? this.body,
+      );
+
+  Item.fromJson(Map json)
+      : body = json['body'],
+        id = json['id'];
+
+  Map toJson() => {
+        'id': id,
+        'body': body,
+      };
 }
