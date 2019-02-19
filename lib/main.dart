@@ -48,6 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context, _ViewModel viewModel) => Column(
               children: <Widget>[
                 AddItemWidget(viewModel),
+                Expanded(child: TodoItemListWidget(model: viewModel)),
+                RemoveItemsButtonWidget(model: viewModel),
               ],
             ),
       ),
@@ -55,10 +57,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class ItemListWidget extends StatelessWidget {
+class TodoItemListWidget extends StatelessWidget {
   final _ViewModel model;
 
-  const ItemListWidget({Key key, @required this.model}) : super(key: key);
+  const TodoItemListWidget({Key key, @required this.model}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -75,18 +77,16 @@ class ItemListWidget extends StatelessWidget {
 }
 
 class RemoveItemsButtonWidget extends StatelessWidget {
-
   final _ViewModel model;
 
-  const RemoveItemsButtonWidget({Key key, @required this.model}) : super(key: key);
-
+  const RemoveItemsButtonWidget({Key key, @required this.model})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => RaisedButton(
-    child: Text('Delete all Items'),
-    onPressed: () => model.onRemoveAllItems(),
-  );
-
+        child: Text('Delete all Items'),
+        onPressed: () => model.onRemoveAllItems(),
+      );
 }
 
 class AddItemWidget extends StatefulWidget {
