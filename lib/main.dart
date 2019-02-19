@@ -43,9 +43,73 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Redux Items'),
       ),
-      body: StoreConnector<AppState, _ViewModel>(),
+      body: StoreConnector<AppState, _ViewModel>(
+        converter: (Store<AppState> store) => _ViewModel.create(store),
+        builder: (BuildContext context, _ViewModel viewModel) => Column(
+              children: <Widget>[
+                AddItemWidget(viewModel),
+              ],
+            ),
+      ),
     );
   }
+}
+
+class ItemListWidget extends StatelessWidget {
+  final _ViewModel model;
+
+  const ItemListWidget({Key key, @required this.model}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => ListView(
+        children: model.items
+            .map((item) => ListTile(
+                  title: Text(item.body),
+                  leading: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => model.onRemoveItem(item),
+                  ),
+                ))
+            .toList(),
+      );
+}
+
+class RemoveItemsButtonWidget extends StatelessWidget {
+
+  final _ViewModel model;
+
+  const RemoveItemsButtonWidget({Key key, @required this.model}) : super(key: key);
+
+
+  @override
+  Widget build(BuildContext context) => RaisedButton(
+    child: Text('Delete all Items'),
+    onPressed: () => model.onRemoveAllItems(),
+  );
+
+}
+
+class AddItemWidget extends StatefulWidget {
+  final _ViewModel model;
+
+  AddItemWidget(this.model);
+
+  @override
+  State<StatefulWidget> createState() => _AddItemWidgetState();
+}
+
+class _AddItemWidgetState extends State<AddItemWidget> {
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) => TextField(
+        controller: controller,
+        decoration: InputDecoration(hintText: 'Add an Item'),
+        onSubmitted: (String input) {
+          widget.model.onAddItem(input);
+          controller.text = '';
+        },
+      );
 }
 
 class _ViewModel {

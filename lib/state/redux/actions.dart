@@ -1,5 +1,4 @@
 import 'package:todo_redux_example/model/model.dart';
-import 'package:todo_redux_example/state/app_state.dart';
 
 class AddItemAction {
   static int _id = 0;
