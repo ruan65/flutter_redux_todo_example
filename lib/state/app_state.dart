@@ -7,4 +7,10 @@ class AppState {
   AppState({@required this.items});
 
   AppState.initialState() : items = List.unmodifiable(<Item>[]);
+
+  AppState.fromJson(Map json)
+      : items =
+            (json['items'] as List).map((item) => Item.fromJson(item)).toList();
+
+  Map toJson() => {'items': items};
 }

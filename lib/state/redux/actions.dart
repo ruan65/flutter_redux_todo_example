@@ -17,4 +17,13 @@ class RemoveItemAction {
   RemoveItemAction(this.item);
 }
 
-class RemoveAllItemsAction{}
+class RemoveAllItemsAction {}
+
+class GetItemsAction {}
+
+class LoadedItemsAction {
+
+  final List<Item> items;
+
+  LoadedItemsAction(this.items);
+}

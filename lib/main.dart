@@ -5,15 +5,19 @@ import 'package:todo_redux_example/model/model.dart';
 import 'package:todo_redux_example/state/app_state.dart';
 import 'package:todo_redux_example/state/redux/actions.dart';
 import 'package:todo_redux_example/state/redux/reducers.dart';
+import 'package:todo_redux_example/state/redux/middleware.dart';
+import 'package:flutter_redux_dev_tools/flutter_redux_dev_tools.dart';
+import 'package:redux_dev_tools/redux_dev_tools.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Store<AppState> store = Store<AppState>(
+    final DevToolsStore<AppState> store = DevToolsStore<AppState>(
       appStateReducer,
       initialState: AppState.initialState(),
+      middleware: [appStateMiddleware],
     );
 
     return StoreProvider<AppState>(
@@ -21,16 +25,21 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData.dark(),
-        home: MyHomePage(),
+        home: StoreBuilder<AppState>(
+          onInit: (store) => store.dispatch(GetItemsAction()),
+          builder: (BuildContext ctx, Store<AppState> store) =>
+              MyHomePage(store: store),
+        ),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
+  final DevToolsStore<AppState> store;
+
+  MyHomePage({Key key, this.title, this.store}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -52,6 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 RemoveItemsButtonWidget(model: viewModel),
               ],
             ),
+      ),
+      drawer: Container(
+        child: ReduxDevTools(widget.store),
       ),
     );
   }
