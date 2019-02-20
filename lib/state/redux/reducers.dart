@@ -2,30 +2,53 @@ import 'package:todo_redux_example/model/model.dart';
 import 'package:todo_redux_example/state/app_state.dart';
 import 'package:todo_redux_example/state/redux/actions.dart';
 
+import 'package:redux/redux.dart';
+
 AppState appStateReducer(AppState prevState, dynamic action) {
   return AppState(
-    items: itemReducer(prevState.items, action),
+    items: itemCombinedReducer(prevState.items, action),
   );
 }
 
-List<Item> itemReducer(List<Item> state, dynamic action) {
+Reducer<List<Item>> itemCombinedReducer = combineReducers<List<Item>>([
+  TypedReducer<List<Item>, AddItemAction>(addItemReducer),
+  TypedReducer<List<Item>, RemoveAllItemsAction>(removeAllItemsReducer),
+  TypedReducer<List<Item>, RemoveItemAction>(removeItemReducer),
+  TypedReducer<List<Item>, LoadedItemsAction>(loadItemsReducer),
+]);
 
-  if(action is AddItemAction) {
-    return []
-        ..addAll(state)
-        ..add(Item(id: action.id, body: action.item));
-  }
+List<Item> addItemReducer(List<Item> items, AddItemAction action) => []
+  ..addAll(items)
+  ..add(Item(id: action.id, body: action.item));
 
-  if(action is RemoveItemAction) {
-    return List.unmodifiable(List.from(state)..remove(action.item));
-  }
+List<Item> removeItemReducer(List<Item> items, RemoveItemAction action) =>
+    List.unmodifiable(List.from(items)..remove(action.item));
 
-  if(action is RemoveAllItemsAction) {
-    return List.unmodifiable([]);
-  }
+List<Item> removeAllItemsReducer(
+        List<Item> items, RemoveAllItemsAction action) =>
+    List.unmodifiable([]);
 
-  if(action is LoadedItemsAction) {
-    return action.items;
-  }
-  return state;
-}
+List<Item> loadItemsReducer(List<Item> items, LoadedItemsAction action) =>
+    action.items;
+
+//List<Item> itemReducer(List<Item> state, dynamic action) {
+//
+//  if(action is AddItemAction) {
+//    return []
+//        ..addAll(state)
+//        ..add(Item(id: action.id, body: action.item));
+//  }
+//
+//  if(action is RemoveItemAction) {
+//    return List.unmodifiable(List.from(state)..remove(action.item));
+//  }
+//
+//  if(action is RemoveAllItemsAction) {
+//    return List.unmodifiable([]);
+//  }
+//
+//  if(action is LoadedItemsAction) {
+//    return action.items;
+//  }
+//  return state;
+//}

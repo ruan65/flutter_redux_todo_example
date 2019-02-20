@@ -9,6 +9,32 @@ import 'package:todo_redux_example/state/redux/actions.dart';
 
 const prefsKeyItemsState = 'prefsKeyItemsState';
 
+List<Middleware<AppState>> appStateMiddleware(
+    [AppState state = const AppState(items: [])]) {
+  final loadItemFun = _loadFromPrefs(state);
+  final saveItemsFun = _saveToPrefs(state);
+
+  return [
+    TypedMiddleware<AppState, AddItemAction>(saveItemsFun),
+    TypedMiddleware<AppState, RemoveItemAction>(saveItemsFun),
+    TypedMiddleware<AppState, RemoveAllItemsAction>(saveItemsFun),
+    TypedMiddleware<AppState, GetItemsAction>(loadItemFun),
+  ];
+}
+
+Middleware<AppState> _loadFromPrefs(AppState state) =>
+    (Store<AppState> store, dynamic action, NextDispatcher next) {
+      next(action);
+      loadFromPrefs()
+          .then((state) => store.dispatch(LoadedItemsAction(state.items)));
+    };
+
+Middleware<AppState> _saveToPrefs(AppState state) =>
+    (Store<AppState> store, dynamic action, NextDispatcher next) {
+      next(action);
+      saveStateToPrefs(state);
+    };
+
 void saveStateToPrefs(AppState state) async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   var encodedString = json.encode(state.toJson());
@@ -26,18 +52,18 @@ Future<AppState> loadFromPrefs() async {
   return AppState.initialState();
 }
 
-void appStateMiddleware(
-    Store<AppState> store, dynamic action, NextDispatcher next) async {
-  next(action);
-
-  if (action is AddItemAction ||
-      action is RemoveItemAction ||
-      action is RemoveAllItemsAction) {
-    saveStateToPrefs(store.state);
-  }
-
-  if (action is GetItemsAction) {
-    await loadFromPrefs()
-        .then((state) => store.dispatch(LoadedItemsAction(state.items)));
-  }
-}
+//void appStateMiddleware(
+//    Store<AppState> store, dynamic action, NextDispatcher next) async {
+//  next(action);
+//
+//  if (action is AddItemAction ||
+//      action is RemoveItemAction ||
+//      action is RemoveAllItemsAction) {
+//    saveStateToPrefs(store.state);
+//  }
+//
+//  if (action is GetItemsAction) {
+//    await loadFromPrefs()
+//        .then((state) => store.dispatch(LoadedItemsAction(state.items)));
+//  }
+//}

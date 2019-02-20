@@ -4,7 +4,7 @@ import 'package:todo_redux_example/model/model.dart';
 class AppState {
   final List<Item> items;
 
-  AppState({@required this.items});
+  const AppState({@required this.items});
 
   AppState.initialState() : items = List.unmodifiable(<Item>[]);
 
@@ -13,4 +13,7 @@ class AppState {
             (json['items'] as List).map((item) => Item.fromJson(item)).toList();
 
   Map toJson() => {'items': items};
+
+  @override
+  String toString() => toJson().toString();
 }
