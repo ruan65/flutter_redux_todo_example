@@ -15,6 +15,7 @@ Reducer<List<Item>> itemCombinedReducer = combineReducers<List<Item>>([
   TypedReducer<List<Item>, RemoveAllItemsAction>(removeAllItemsReducer),
   TypedReducer<List<Item>, RemoveItemAction>(removeItemReducer),
   TypedReducer<List<Item>, LoadedItemsAction>(loadItemsReducer),
+  TypedReducer<List<Item>, ItemCompletedAction>(itemCompletedReducer),
 ]);
 
 List<Item> addItemReducer(List<Item> items, AddItemAction action) => []
@@ -31,24 +32,9 @@ List<Item> removeAllItemsReducer(
 List<Item> loadItemsReducer(List<Item> items, LoadedItemsAction action) =>
     action.items;
 
-//List<Item> itemReducer(List<Item> state, dynamic action) {
-//
-//  if(action is AddItemAction) {
-//    return []
-//        ..addAll(state)
-//        ..add(Item(id: action.id, body: action.item));
-//  }
-//
-//  if(action is RemoveItemAction) {
-//    return List.unmodifiable(List.from(state)..remove(action.item));
-//  }
-//
-//  if(action is RemoveAllItemsAction) {
-//    return List.unmodifiable([]);
-//  }
-//
-//  if(action is LoadedItemsAction) {
-//    return action.items;
-//  }
-//  return state;
-//}
+List<Item> itemCompletedReducer(List<Item> items, ItemCompletedAction action) =>
+    items
+        .map((item) => item.id == action.item.id
+            ? item.copyWith(finished: !item.completed)
+            : item)
+        .toList();

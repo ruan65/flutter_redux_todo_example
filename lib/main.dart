@@ -83,6 +83,12 @@ class TodoItemListWidget extends StatelessWidget {
                     icon: Icon(Icons.delete),
                     onPressed: () => model.onRemoveItem(item),
                   ),
+                  trailing: Checkbox(
+                    value: item.completed,
+                    onChanged: (b) {
+                      model.onCompleted(item);
+                    },
+                  ),
                 ))
             .toList(),
       );
@@ -126,12 +132,14 @@ class _AddItemWidgetState extends State<AddItemWidget> {
 
 class _ViewModel {
   final List<Item> items;
+  final Function(Item) onCompleted;
   final Function(String) onAddItem;
   final Function(Item) onRemoveItem;
   final Function() onRemoveAllItems;
 
   _ViewModel({
     this.items,
+    this.onCompleted,
     this.onAddItem,
     this.onRemoveItem,
     this.onRemoveAllItems,
@@ -150,8 +158,13 @@ class _ViewModel {
       store.dispatch(RemoveAllItemsAction());
     }
 
+    _onCompleted(Item item) {
+      store.dispatch(ItemCompletedAction(item));
+    }
+
     return _ViewModel(
       items: store.state.items,
+      onCompleted: _onCompleted,
       onAddItem: _onAddItem,
       onRemoveItem: _onRemoveItem,
       onRemoveAllItems: _onRemoveAllItem,
